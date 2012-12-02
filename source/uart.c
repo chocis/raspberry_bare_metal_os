@@ -1,5 +1,6 @@
 #include "uart.h"
 #include "globalParameters.h"
+#include "gpio.h"
 
 void uart_putc (char c){
     //the fifth bit is set when FIFO can send data

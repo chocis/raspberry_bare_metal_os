@@ -1,14 +1,17 @@
+#ifndef FRAMEBUFFER_H
+#define FRAMEBUFFER_H
+
 /*
 * HOW RPI FRAMEBUFFER WORKS.
-* 
+*
 * Main steps overview:
 * 	1) Send message to mailbox (for supplying info for GPU)
 * 	2) Read message from mailbox (for reading GPU result and FB address)
 *	3) Now can write to returned framebuffer and it's represented on screen
 *
-* 1) SEND MESSAGE 
+* 1) SEND MESSAGE
 *	1.1) Wait until status registers top bit is 0.
-*	1.2) Write to Mailbox WRITE register the message ( address of frambuffer structure and channel) 
+*	1.2) Write to Mailbox WRITE register the message ( address of frambuffer structure and channel)
 *		 IMPORTANT!! This message has to be in SPECIFIC format - pointer to fb data structure must be
 *		 16bit (or is it called 4bit?) aligned. Anyway it must be placed in an addres which last 4 bits are 0000.
 */
@@ -40,10 +43,13 @@ struct Bcm2835FrameBuffer
 	unsigned int y; //Offset in y direction. Simplest thing to do is set to zero
 	volatile unsigned int pointer; //GPU fills this in to be a pointer to the frame buffer
 		//I find this is usually (always?) 0x4F...
-	unsigned int size; //GPU fills this in 
+	unsigned int size; //GPU fills this in
 };
 
 
 int FB_initFrameBuffer();
 int FB_writeMessage(volatile struct Bcm2835FrameBuffer *fb);
 int FB_readMessage();
+
+
+#endif /* FRAMEBUFFER_H */

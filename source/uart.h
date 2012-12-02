@@ -2,12 +2,6 @@
 #define UART_H
 
 
-#define GPFSEL1 0x20200004          //GPIO function select register
-#define GPSET0  0x2020001C
-#define GPCLR0  0x20200028
-#define GPPUD       0x20200094      //GPIO pin pull up/down enable register
-#define GPPUDCLK0   0x20200098      //GPIO pin pull up/down enable clock register 0
-
 #define AUX_ENABLES     0x20215004  //Auxiliary enables
 #define AUX_MU_IO_REG   0x20215040  //Mini UART I/O data
 #define AUX_MU_IER_REG  0x20215044  //Mini UART Interrupt Enable register

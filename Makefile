@@ -1,10 +1,15 @@
 # The toolchain to use. arm-none-eabi works, but there does exist
 # arm-bcm2708-linux-gnueabi.
 ARMGNU ?= arm-none-eabi
+#ARMGNU ?= ~/crosscompilerrpi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf
 # Mac Ports has arm-elf
 
 AOPS = --warn --fatal-warnings
-COPS = -Wall -Werror -O2 -nostdlib -nostartfiles -ffreestanding
+COPS = -Wall -Werror -O2 -nostdlib -nostartfiles -ffreestanding -mcpu=arm1176jzf-s
+
+#ARM doesnt have division instruction, so special division functions must be implemented, which are really found in this
+LIBGCC ?= lib/libgcc.a
+
 
 
 # The intermediate directory for compiled object files.
@@ -47,7 +52,7 @@ $(TARGET) : $(BUILD)output.elf
 
 # Rule to make the elf file.
 $(BUILD)output.elf : $(OBJECTS) $(LINKER)
-	$(ARMGNU)-ld $(OBJECTS) -Map $(MAP) -L$(BUILD) -o $(BUILD)output.elf -T $(LINKER)
+	$(ARMGNU)-ld $(OBJECTS) -Map $(MAP) -L$(BUILD) -o $(BUILD)output.elf -T $(LINKER) $(LIBGCC)
 
 # Rule to make the object files.
 $(BUILD)%.o: $(SOURCE)%.s

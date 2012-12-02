@@ -1,3 +1,7 @@
+#ifndef GLOBALPARAMETERS_H
+#define GLOBALPARAMETERS_H
+
+
 /*
 * This file contains global helper values and parameters.
 */
@@ -11,3 +15,11 @@
 extern void PUT32 ( unsigned int, unsigned int ); //other implementations
 extern unsigned int GET32 ( unsigned int );
 extern void dummy ( unsigned int );
+
+
+
+
+
+
+
+#endif /* GLOBALPARAMETERS_H */

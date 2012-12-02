@@ -1,20 +1,21 @@
 #include "globalParameters.h"
-#include "framebuffer.h"
+//#include "framebuffer.h"
 #include "uart.h"
 #include "debug.h"
 
+//#include <stdio.h>
 
-int notmain ( void )
+void notmain ( void )
 {
+    initUART(); //should be set up before debugging with uart
+
+  // FB_initFrameBuffer();
 
 
-   //FB_initFrameBuffer();
-
-   initUART();
-
-   DEBUG("Hey debug works?\r\n");
+   DEBUG("Hey debug %d works? A: %s\r\n", 55, "YOO");
 
 
 
-   return(0);
+    while(1){}
+
 }

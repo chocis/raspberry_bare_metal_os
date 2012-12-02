@@ -4,7 +4,7 @@
 
 .globl _start
 _start:
-    mov sp,#0x8000  ;@ FIXME - should think about stack pointer to different place
+    mov sp,#0x100000  ;@ FIXME - should think about stack pointer to different place
     				;@ for now it has 0x8000 bytes of memory
     bl notmain
 

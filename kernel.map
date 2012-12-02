@@ -1,8 +1,17 @@
+Archive member included because of file (symbol)
+
+lib/libgcc.a(_udivsi3.o)      build/printf.o (__aeabi_uidiv)
+lib/libgcc.a(_dvmd_tls.o)     lib/libgcc.a(_udivsi3.o) (__aeabi_idiv0)
+
+Allocating common symbols
+Common symbol       size              file
+
+debugBuffer         0x1f4             build/debug.o
 
 Memory Configuration
 
 Name             Origin             Length             Attributes
-ram              0x00008000         0x00010000
+ram              0x00008000         0x00100000
 *default*        0x00000000         0xffffffff
 
 Linker script and memory map
@@ -10,52 +19,85 @@ Linker script and memory map
 LOAD build/vectors.o
 LOAD build/debug.o
 LOAD build/framebuffer.o
+LOAD build/gpio.o
+LOAD build/printf.o
 LOAD build/START.o
+LOAD build/timer.o
 LOAD build/uart.o
 
-.text           0x00008000      0x420
+.text           0x00008000      0x948
  *(.text*)
  .text          0x00008000       0x1c build/vectors.o
                 0x00008014                GET32
                 0x0000800c                PUT32
                 0x00008000                _start
                 0x00008008                dummy
- .text          0x0000801c       0x1c build/debug.o
+ .text          0x0000801c       0x44 build/debug.o
                 0x0000801c                debug_printf
- .text          0x00008038      0x2f4 build/framebuffer.o
-                0x00008038                FB_initFrameBuffer
-                0x00008274                LED_ERROR
-                0x000081a0                FB_writeMessage
-                0x000082f8                wait
-                0x000081e0                FB_readMessage
-                0x00008220                LED_OK
- .text          0x0000832c       0x20 build/START.o
-                0x0000832c                notmain
- .text          0x0000834c       0xd4 build/uart.o
-                0x0000834c                uart_putc
-                0x00008384                uart_putstring
-                0x000083b4                initUART
+ .text          0x00008060      0x1b8 build/framebuffer.o
+                0x000080dc                FB_initFrameBuffer
+                0x00008060                FB_writeMessage
+                0x0000809c                FB_readMessage
+ .text          0x00008218        0x0 build/gpio.o
+ .text          0x00008218      0x4ac build/printf.o
+                0x00008638                tfp_sprintf
+                0x000085d8                init_printf
+                0x000085fc                tfp_vsprintf
+                0x000083a0                tfp_format
+                0x00008684                tfp_printf
+ .text          0x000086c4       0x24 build/START.o
+                0x000086c4                notmain
+ .text          0x000086e8      0x108 build/timer.o
+                0x00008770                LED_ERROR
+                0x000086e8                wait
+                0x0000871c                LED_OK
+ .text          0x000087f0       0xb8 build/uart.o
+                0x000087f0                uart_putc
+                0x00008814                uart_putstring
+                0x00008840                initUART
+ .text          0x000088a8       0x9c lib/libgcc.a(_udivsi3.o)
+                0x000088a8                __udivsi3
+                0x000088a8                __aeabi_uidiv
+                0x00008930                __aeabi_uidivmod
+ .text          0x00008944        0x4 lib/libgcc.a(_dvmd_tls.o)
+                0x00008944                __aeabi_ldiv0
+                0x00008944                __aeabi_idiv0
 
 .glue_7         0x00000000        0x0
  .glue_7        0x00000000        0x0 build/vectors.o
  .glue_7        0x00000000        0x0 build/debug.o
  .glue_7        0x00000000        0x0 build/framebuffer.o
+ .glue_7        0x00000000        0x0 build/gpio.o
+ .glue_7        0x00000000        0x0 build/printf.o
  .glue_7        0x00000000        0x0 build/START.o
+ .glue_7        0x00000000        0x0 build/timer.o
  .glue_7        0x00000000        0x0 build/uart.o
+ .glue_7        0x00000000        0x0 lib/libgcc.a(_udivsi3.o)
+ .glue_7        0x00000000        0x0 lib/libgcc.a(_dvmd_tls.o)
 
 .glue_7t        0x00000000        0x0
  .glue_7t       0x00000000        0x0 build/vectors.o
  .glue_7t       0x00000000        0x0 build/debug.o
  .glue_7t       0x00000000        0x0 build/framebuffer.o
+ .glue_7t       0x00000000        0x0 build/gpio.o
+ .glue_7t       0x00000000        0x0 build/printf.o
  .glue_7t       0x00000000        0x0 build/START.o
+ .glue_7t       0x00000000        0x0 build/timer.o
  .glue_7t       0x00000000        0x0 build/uart.o
+ .glue_7t       0x00000000        0x0 lib/libgcc.a(_udivsi3.o)
+ .glue_7t       0x00000000        0x0 lib/libgcc.a(_dvmd_tls.o)
 
 .vfp11_veneer   0x00000000        0x0
  .vfp11_veneer  0x00000000        0x0 build/vectors.o
  .vfp11_veneer  0x00000000        0x0 build/debug.o
  .vfp11_veneer  0x00000000        0x0 build/framebuffer.o
+ .vfp11_veneer  0x00000000        0x0 build/gpio.o
+ .vfp11_veneer  0x00000000        0x0 build/printf.o
  .vfp11_veneer  0x00000000        0x0 build/START.o
+ .vfp11_veneer  0x00000000        0x0 build/timer.o
  .vfp11_veneer  0x00000000        0x0 build/uart.o
+ .vfp11_veneer  0x00000000        0x0 lib/libgcc.a(_udivsi3.o)
+ .vfp11_veneer  0x00000000        0x0 lib/libgcc.a(_dvmd_tls.o)
 
 .janus_2cc_veneer
                 0x00000000        0x0
@@ -66,57 +108,99 @@ LOAD build/uart.o
  .janus_2cc_veneer
                 0x00000000        0x0 build/framebuffer.o
  .janus_2cc_veneer
+                0x00000000        0x0 build/gpio.o
+ .janus_2cc_veneer
+                0x00000000        0x0 build/printf.o
+ .janus_2cc_veneer
                 0x00000000        0x0 build/START.o
  .janus_2cc_veneer
+                0x00000000        0x0 build/timer.o
+ .janus_2cc_veneer
                 0x00000000        0x0 build/uart.o
+ .janus_2cc_veneer
+                0x00000000        0x0 lib/libgcc.a(_udivsi3.o)
+ .janus_2cc_veneer
+                0x00000000        0x0 lib/libgcc.a(_dvmd_tls.o)
 
 .v4_bx          0x00000000        0x0
  .v4_bx         0x00000000        0x0 build/vectors.o
  .v4_bx         0x00000000        0x0 build/debug.o
  .v4_bx         0x00000000        0x0 build/framebuffer.o
+ .v4_bx         0x00000000        0x0 build/gpio.o
+ .v4_bx         0x00000000        0x0 build/printf.o
  .v4_bx         0x00000000        0x0 build/START.o
+ .v4_bx         0x00000000        0x0 build/timer.o
  .v4_bx         0x00000000        0x0 build/uart.o
+ .v4_bx         0x00000000        0x0 lib/libgcc.a(_udivsi3.o)
+ .v4_bx         0x00000000        0x0 lib/libgcc.a(_dvmd_tls.o)
 
-.rodata         0x00008420       0x24
+.rodata         0x00008948       0x30
  *(.rodata*)
  .rodata.str1.4
-                0x00008420       0x13 build/START.o
-                                 0x14 (size before relaxing)
- *fill*         0x00008433        0x1 00
+                0x00008948       0x20 build/START.o
  .rodata.str1.4
-                0x00008434       0x10 build/uart.o
+                0x00008968       0x10 build/uart.o
 
 .data           0x00000000        0x0
  .data          0x00000000        0x0 build/vectors.o
  .data          0x00000000        0x0 build/debug.o
  .data          0x00000000        0x0 build/framebuffer.o
+ .data          0x00000000        0x0 build/gpio.o
+ .data          0x00000000        0x0 build/printf.o
  .data          0x00000000        0x0 build/START.o
+ .data          0x00000000        0x0 build/timer.o
  .data          0x00000000        0x0 build/uart.o
+ .data          0x00000000        0x0 lib/libgcc.a(_udivsi3.o)
+ .data          0x00000000        0x0 lib/libgcc.a(_dvmd_tls.o)
 
-.bss            0x00008444        0x0
+.bss            0x00008978      0x1fc
  *(.bss*)
- .bss           0x00008444        0x0 build/vectors.o
- .bss           0x00008444        0x0 build/debug.o
- .bss           0x00008444        0x0 build/framebuffer.o
- .bss           0x00008444        0x0 build/START.o
- .bss           0x00008444        0x0 build/uart.o
+ .bss           0x00008978        0x0 build/vectors.o
+ .bss           0x00008978        0x0 build/debug.o
+ .bss           0x00008978        0x0 build/framebuffer.o
+ .bss           0x00008978        0x0 build/gpio.o
+ .bss           0x00008978        0x8 build/printf.o
+ .bss           0x00008980        0x0 build/START.o
+ .bss           0x00008980        0x0 build/timer.o
+ .bss           0x00008980        0x0 build/uart.o
+ .bss           0x00008980        0x0 lib/libgcc.a(_udivsi3.o)
+ .bss           0x00008980        0x0 lib/libgcc.a(_dvmd_tls.o)
+ COMMON         0x00008980      0x1f4 build/debug.o
+                0x00008980                debugBuffer
+LOAD lib/libgcc.a
 OUTPUT(build/output.elf elf32-littlearm)
 
 .ARM.attributes
-                0x00000000       0x22
+                0x00000000       0x34
  .ARM.attributes
                 0x00000000       0x14 build/vectors.o
  .ARM.attributes
-                0x00000014       0x2e build/debug.o
+                0x00000014       0x32 build/debug.o
  .ARM.attributes
-                0x00000042       0x2e build/framebuffer.o
+                0x00000046       0x32 build/framebuffer.o
  .ARM.attributes
-                0x00000070       0x2e build/START.o
+                0x00000078       0x30 build/gpio.o
  .ARM.attributes
-                0x0000009e       0x2e build/uart.o
+                0x000000a8       0x32 build/printf.o
+ .ARM.attributes
+                0x000000da       0x32 build/START.o
+ .ARM.attributes
+                0x0000010c       0x32 build/timer.o
+ .ARM.attributes
+                0x0000013e       0x32 build/uart.o
+ .ARM.attributes
+                0x00000170       0x1b lib/libgcc.a(_udivsi3.o)
+ .ARM.attributes
+                0x0000018b       0x1b lib/libgcc.a(_dvmd_tls.o)
 
-.comment        0x00000000       0xa8
+.comment        0x00000000      0x126
  .comment       0x00000000       0x2a build/debug.o
  .comment       0x0000002a       0x2a build/framebuffer.o
- .comment       0x00000054       0x2a build/START.o
- .comment       0x0000007e       0x2a build/uart.o
+ .comment       0x00000054       0x2a build/gpio.o
+ .comment       0x0000007e       0x2a build/printf.o
+ .comment       0x000000a8       0x2a build/START.o
+ .comment       0x000000d2       0x2a build/timer.o
+ .comment       0x000000fc       0x2a build/uart.o
+
+.debug_frame    0x00000000       0x20
+ .debug_frame   0x00000000       0x20 lib/libgcc.a(_udivsi3.o)
