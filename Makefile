@@ -1,10 +1,3 @@
-###############################################################################
-#	makefile
-#	 by Alex Chadwick
-#
-#	A makefile script for generation of raspberry pi kernel images.
-###############################################################################
-
 # The toolchain to use. arm-none-eabi works, but there does exist
 # arm-bcm2708-linux-gnueabi.
 ARMGNU ?= arm-none-eabi
