@@ -1,9 +1,0 @@
-#include "framebuffer.h"
-
-int notmain ( void )
-{
-   
-   
-   FB_initFrameBuffer();
-     
-}
