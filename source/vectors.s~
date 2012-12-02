@@ -1,0 +1,19 @@
+;@ This is really the entry point for RPI. Creating _start fot that.
+;@ Setting up stack pointer and then branching to notmain
+
+
+.globl _start
+_start:
+    mov sp,#0x8000  ;@ FIXME - should think about stack pointer to different place
+    				;@ for now it has 0x8000 bytes of memory
+    bl notmain
+    
+;@ ===========================================================
+;@ Can be used to overcome gcc -O2 optimisation, when something is overoptimezed and lost
+;@ then using this function shouldn't optimize. There is of course volatile option, but that
+;@ ends up with bigger binary result file (more commands). 
+.globl dummy
+dummy:
+    bx lr
+
+
