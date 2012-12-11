@@ -6,7 +6,7 @@ ARMGNU ?= arm-none-eabi
 
 AOPS = --warn --fatal-warnings
 COPS = -Wall -Werror -O2 -nostdlib -nostartfiles -ffreestanding -mcpu=arm1176jzf-s
-
+INC =-Isource/headers
 #ARM doesnt have division instruction, so special division functions must be implemented, which are really found in this
 LIBGCC ?= lib/libgcc.a
 
@@ -59,7 +59,7 @@ $(BUILD)%.o: $(SOURCE)%.s
 	$(ARMGNU)-as -I $(SOURCE) $< -o $@
 
 $(BUILD)%.o : $(SOURCE)%.c
-	$(ARMGNU)-gcc $(COPS) -c -o $@ $?
+	$(ARMGNU)-gcc $(COPS) $(INC) -c -o $@ $?
 
 
 # Rule to clean files.
