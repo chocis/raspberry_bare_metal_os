@@ -4,7 +4,7 @@
 
 #define AUX_ENABLES     0x20215004  //Auxiliary enables
 #define AUX_MU_IO_REG   0x20215040  //Mini UART I/O data
-#define AUX_MU_IER_REG  0x20215044  //Mini UART Interrupt Enable register
+#define AUX_MU_IER_REG  0x20215044  //Mini UART Interrupt Enable register  NOTE THERE IS ERROR IN DOCUMENTATION, read http://elinux.org/BCM2835_datasheet_errata
 #define AUX_MU_IIR_REG  0x20215048  //Mini UART Interrupt Identify register
 #define AUX_MU_LCR_REG  0x2021504C  //Mini UART Line Control register
 #define AUX_MU_MCR_REG  0x20215050  //Mini UART Modem Control
@@ -12,7 +12,7 @@
 #define AUX_MU_MSR_REG  0x20215058
 #define AUX_MU_SCRATCH  0x2021505C
 #define AUX_MU_CNTL_REG 0x20215060  //Mini UART extra Control register
-#define AUX_MU_STAT_REG 0x20215064
+#define AUX_MU_STAT_REG 0x20215064  //Mini UART extra status register
 #define AUX_MU_BAUD_REG 0x20215068  //Mini UART Baudrate
 
 
@@ -25,6 +25,7 @@
 void uart_putc (char c);
 void uart_putstring(char* data);
 int initUART();
+int initUARTWithInterrupts();
 
 
 

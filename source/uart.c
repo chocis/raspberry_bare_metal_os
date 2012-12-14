@@ -1,6 +1,8 @@
 #include "uart.h"
 #include "globalParameters.h"
 #include "gpio.h"
+#include "interrupts.h"
+#include "ringBuffer.h"
 
 void uart_putc (char c){
     //the fifth bit is set when FIFO can send data
@@ -68,4 +70,41 @@ int initUART(){
 
     return 0;
 }
+
+int initUARTWithInterrupts(){
+
+    POINTVAL_(IRQ_DISABLE1) = 1<<29; //disable MINI UART interrupts (just for safety). NOTE that mini uart is 29 (AUX)
+
+    ringInit();
+
+    unsigned int ra;
+
+    /* Firstly set up GPIO pins*/
+    ra = POINTVAL_(GPFSEL1);        //get current register value
+    ra &= ~(0b111<<12);             //unset registers 12-14 (for GPIO 14)
+    ra |= 0b010<<12;                //set alternative function 5, which enables UART (on GPIO 14)
+                                    //the same for GPIO 15
+    ra &= ~(0b111<<15);             //unset registers 12-14 (for GPIO 15)
+    ra |= 0b010<<15;                //set alternative function 5, which enables UART (on GPIO 15)
+    POINTVAL_(GPFSEL1) = ra;        //write set register value back
+
+    /* Configure UART */
+    POINTVAL_(AUX_ENABLES) = 0b1;       //set 1st bit to 1, which enables mini UART
+    POINTVAL_(AUX_MU_IER_REG) = 0b101;  //(THIS IS DIFFERENT FROM NON INTERRUPT UART) Enables receive interupts (note errors in doucmentation)
+    POINTVAL_(AUX_MU_LCR_REG) = 0b11;   // first bit must set to enable 8-bit mode, 2nd bit must be set for some reason so that
+                                        //normal data are sent, but IMPORTANT..that is not mentioned in documentation !!
+    POINTVAL_(AUX_MU_MCR_REG) = 0;      // set to 0 - nothing used
+    POINTVAL_(AUX_MU_IIR_REG) = 0b11000110;     //(THIS IS DIFFERENT FROM NON INTERRUPT UART) (note errors in docs)
+    POINTVAL_(AUX_MU_BAUD_REG) = MINIUART_BAUD_RATE;
+    POINTVAL_(AUX_MU_CNTL_REG) = 0b11;     //enable Tx, Rx
+
+    uart_putstring("UART with Interrupts inited\r\n");
+
+
+    POINTVAL_(IRQ_ENABLE1) = 1<<29;
+
+
+    return 0;
+}
+
 //-------------------------------------------------------------------------

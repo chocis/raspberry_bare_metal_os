@@ -14,7 +14,7 @@
 
 extern void PUT32 ( unsigned int, unsigned int ); //other implementations
 extern unsigned int GET32 ( unsigned int );
-extern void dummy ( unsigned int );
+extern void dummy ( );
 
 
 
