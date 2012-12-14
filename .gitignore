@@ -1,1 +1,6 @@
 *~
+*.o
+*.list
+*.elf
+*.map
+*.img

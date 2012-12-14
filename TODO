@@ -1,0 +1,15 @@
+*) implement MMU
+*) finish implementing video framebuffer - create usable API
+*) print text on screen (fb),
+*) create mouse, keyboard input via usb
+*) improve ring buffer
+*) document, comment bootloader, link bootloader with my uart implementation
+*) take ARM division from someone, so that libcc.a is not needed
+*) send flowers to dwelch, because his tutorials are awesome :)
+
+
+Operating system stuff:
+
+*) create shell
+*) create smart virtual memory
+*) create processes
