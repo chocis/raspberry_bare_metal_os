@@ -37,7 +37,7 @@ int FB_initFrameBuffer(){
 		for (i = 0; i < fb->size; i++) {
 
 
-		wait(1000);
+		timerWait(1000);
 			switch(i % 3) {
 				// assumes 24 bit mode.
 				case 0: ((volatile unsigned char *)fb->pointer)[i] = ((COLOR24_YELLOW&0xFF0000)>>16);//COLOR24.red;

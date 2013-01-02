@@ -5,6 +5,10 @@
 *) improve ring buffer
 *) document, comment bootloader, link bootloader with my uart implementation
 *) take ARM division from someone, so that libcc.a is not needed
+*) SD card read/write
+*) implement some I2C and SPI device driver
+*) sound support
+
 *) send flowers to dwelch, because his tutorials are awesome :)
 
 

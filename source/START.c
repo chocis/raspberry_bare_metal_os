@@ -6,8 +6,9 @@
 #include "atags.h"
 #include "interrupts.h"
 #include "ringBuffer.h"
+#include "mmu.h"
+#include "timer.h"
 
-//#include <stdio.h>
 extern void enable_irq ( void );
 
 
@@ -22,7 +23,7 @@ initUARTWithInterrupts();
 
 //    print_all_atags();
 
-
+    DEBUG("yeah\r\n");
 
 //    int address = 0x100;
 //    int i;
@@ -50,22 +51,29 @@ initUARTWithInterrupts();
 //    }
 
     enable_irq();
+    DEBUG("after interupts\r\n");
+
+
+
 
     while(1){
-
-        u32 i;
-
-        for(i=0; i< 5000000; i++){
-            dummy();
-        }
-
-        DEBUG("Currently in buffer: %s\r\n", ringGetCurrentBufferString());
-
-        if(ringCount > 5){
-            removeFirstBufferElements(5);
-        }
-
+        dummy();
     }
+//    while(1){
+//
+//        u32 i;
+//
+//        for(i=0; i< 5000000; i++){
+//            dummy();
+//        }
+//
+//        DEBUG("Currently in buffer: %s\r\n", ringGetCurrentBufferString());
+//
+//        if(ringCount > 5){
+//            removeFirstBufferElements(5);
+//        }
+//
+//    }
 
 }
 

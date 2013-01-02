@@ -76,7 +76,7 @@ reset:
     /* 10011 is SUPERVISOE mode */
     mov r0,#0b11010011
     msr cpsr_c,r0
-    mov sp,#0x8000000 /* set stack pointer for this mode */
+    mov sp,#0x8000000 /* set stack pointer for this mode, its on 112MB, MMU table is right over... TODO..find better positioning */
 
     bl notmain
 
@@ -102,7 +102,7 @@ enable_irq:
 hang: b hang
 
 /* ===========================================================
-* dymmy can be used to overcome gcc -O2 optimisation, when something is overoptimezed and lost
+* dummy can be used to overcome gcc -O2 optimisation, when something is overoptimezed and lost
 * then using this function shouldn't optimize. There is of course volatile option, but that
 * ends up with bigger binary result file (more commands).
 */

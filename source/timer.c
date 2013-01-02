@@ -2,11 +2,14 @@
 #include "gpio.h"
 #include "timer.h"
 
-
-void wait(unsigned int timeout){
+/*  RPI has a system timer that automatically runs and can be used without initialization.
+*   This function simply loops for provided period of time. Of course it isn't 100% precise.
+*   timeout - time to loop in MICROseconds
+*/
+void timerWait(unsigned int timeout){
 
 	unsigned int waitTime = timeout; //100ms
-	unsigned int startTime = POINTVAL_(TIMER);
+	unsigned int startTime = getTimerCurrentValue();
 
 	while(1){
 
@@ -16,6 +19,10 @@ void wait(unsigned int timeout){
 		if(currentTime - startTime >= waitTime) break;
 	}
 
+}
+
+u32 getTimerCurrentValue(){
+    return POINTVAL_(TIMER);
 }
 
 
@@ -32,7 +39,7 @@ void LED_OK(){
 
       	//clearing pin, actaully sets it high
         POINTVAL_(GPCLR0) = 1<<16;
- 		wait(ra);
+ 		timerWait(ra);
 
     }
 }
@@ -51,10 +58,10 @@ void LED_ERROR(){
     while(1)
     {
         POINTVAL_(GPSET0) = 1<<16;
- 		wait(100000);
+ 		timerWait(100000);
 
         POINTVAL_(GPCLR0) = 1<<16;
- 		wait(100000);
+ 		timerWait(100000);
 
     }
 }
