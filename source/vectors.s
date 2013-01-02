@@ -76,7 +76,7 @@ reset:
     /* 10011 is SUPERVISOE mode */
     mov r0,#0b11010011
     msr cpsr_c,r0
-    mov sp,#0x8000000 /* set stack pointer for this mode, its on 112MB, MMU table is right over... TODO..find better positioning */
+    mov sp,#0x7000000 /* set stack pointer for this mode, its on 112MB, MMU table is right over... TODO..find better positioning */
 
     bl notmain
 
