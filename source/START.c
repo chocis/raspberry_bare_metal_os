@@ -8,18 +8,19 @@
 #include "ringBuffer.h"
 #include "mmu.h"
 #include "timer.h"
+#include "mmc.h"
 
 extern void enable_irq ( void );
 
 
 void notmain ( void )
 {
-  //  initUART(); //should be set up before debugging with uart
+//    initUART(); //should be set up before debugging with uart
 initUARTWithInterrupts();
   // FB_initFrameBuffer();
 
 
-    DEBUG("Hey debug %d works? A: %s, hex: %x\r\n", 55, "YOO", 100);
+  //  DEBUG("Hey debug %d works? A: %s, hex: 0x%x\r\n", 55, "YOO", 100);
 
 //    print_all_atags();
 
@@ -53,7 +54,7 @@ initUARTWithInterrupts();
     enable_irq();
     DEBUG("after interupts\r\n");
 
-
+    mmc_init();
 
 
     while(1){

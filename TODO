@@ -1,4 +1,3 @@
-*) implement MMU
 *) finish implementing video framebuffer - create usable API
 *) print text on screen (fb),
 *) create mouse, keyboard input via usb
