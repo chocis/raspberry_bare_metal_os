@@ -17,6 +17,7 @@ BUILD = build/
 
 # The directory in which source files are stored.
 SOURCE = source/
+SOURCE2 = source/external/FatFs/
 
 # The name of the output file to generate.
 TARGET = kernel.img
@@ -34,6 +35,7 @@ LINKER = kernel.ld
 # assembly code files in source.
 ASM_OBJECTS := $(patsubst $(SOURCE)%.s,$(BUILD)%.o,$(wildcard $(SOURCE)*.s))
 C_OBJECTS   := $(patsubst $(SOURCE)%.c,$(BUILD)%.o,$(wildcard $(SOURCE)*.c))
+C_OBJECTS   += $(patsubst $(SOURCE2)%.c,$(BUILD)%.o,$(wildcard $(SOURCE2)*.c))
 OBJECTS     := $(ASM_OBJECTS) $(C_OBJECTS)
 
 # Rule to make everything.
@@ -59,6 +61,9 @@ $(BUILD)%.o: $(SOURCE)%.s
 	$(ARMGNU)-as -I $(SOURCE) $< -o $@
 
 $(BUILD)%.o : $(SOURCE)%.c
+	$(ARMGNU)-gcc $(COPS) $(INC) -c -o $@ $?
+
+$(BUILD)%.o : $(SOURCE2)%.c
 	$(ARMGNU)-gcc $(COPS) $(INC) -c -o $@ $?
 
 

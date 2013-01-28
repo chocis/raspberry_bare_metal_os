@@ -23,6 +23,8 @@ void mmc_init(void);
 
 void initialMmcInit();
 
+u8 mmcReadData( u8* buffer, u32 sector, u8 numberOfSectors);
+
 struct Mmc_cid_data{
 
     u8 MID;         //Manufacturer id

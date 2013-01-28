@@ -325,33 +325,14 @@ void mmc_init(void)
     POINTVAL_(MMC_BLKSIZECNT) = 0x00200;
 
 
+    mmcReadData((u8*)mbr, 0, 1);
 
 
-    //read block
-    u32 readcount = 0;
-    //READ_SINGLE_BLOCK  (CMD17)  - read block from sd card
-    POINTVAL_(MMC_ARG1) = 0;
-    //0x031A0000 binary is "00000011 00011010 00000000 00000000"
-    //  16:17 - Type of expected response from card: 10 = 48 bits response (WITHOUT BUSY)
-    //  19 - Check the responses CRC
-    //  20 - Check that response has same index as command
-    //  24:29 - (000011) Index of the command to be issued to the card
-    POINTVAL_(MMC_CMDTM) = 0x11380010;
-
-    timerWait(1000000);
-
-    response = POINTVAL_(MMC_RESP0);
-    DEBUG("Response after readblock : 0x%x\r\n", response);
-
-    while(readcount < 128){
-        response = POINTVAL_(MMC_DATA_REG);
-        mbr[readcount] = response;
-        //DEBUG("Response after readsingle blocky : 0x%x\r\n", response);
-        //timerWait(1000);
-        readcount++;
-    }
 
     processMBR();
+
+
+
 }
 
 
@@ -394,6 +375,37 @@ void initialMmcInit(){
     POINTVAL_(MMC_IRPT_MASK_REG) = 0xffffffff;   //set all flags
     timerWait(5000);
 }
+
+u8 mmcReadData( u8* buffer, u32 sector, u8 numberOfSectors){
+
+    u8 sectorNmbr;
+    for(sectorNmbr = 0; sectorNmbr < numberOfSectors; sectorNmbr++){
+         //read block
+        u32 readcount = 0;
+        //READ_SINGLE_BLOCK  (CMD17)  - read block from sd card
+        POINTVAL_(MMC_ARG1) = sector+sectorNmbr;
+        //0x031A0000 binary is "00000011 00011010 00000000 00000000"
+        //  16:17 - Type of expected response from card: 10 = 48 bits response (WITHOUT BUSY)
+        //  19 - Check the responses CRC
+        //  20 - Check that response has same index as command
+        //  24:29 - (000011) Index of the command to be issued to the card
+        POINTVAL_(MMC_CMDTM) = 0x11380010;
+
+        timerWait(2000); //Need to wait !! Probably this should be tested for other cards
+
+        u32 response;// = POINTVAL_(MMC_RESP0);
+        //DEBUG("Response after readblock : 0x%x\r\n", response);
+
+        while(readcount < 128){
+            response = POINTVAL_(MMC_DATA_REG);
+            ((u32*)buffer)[(sectorNmbr*128)+readcount] = response;
+            readcount++;
+        }
+    }
+
+    return 0;
+}
+
 
 /*
 * Sends command to SD controller.
