@@ -6,6 +6,116 @@ struct Mmc_cid_data* mmc_cid_data;
 const char* monthNames[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September",
                             "October", "November", "December"};
 
+// taken from http://en.wikipedia.org/wiki/Partition_type
+const char* MBRPartitionTypes[] = { [0x00] = "Empty partition entry",
+                                    [0x01] = "FAT12 as primary partition",
+                                    [0x02] = "XENIX root",
+                                    [0x03] = "XENIX usr",
+                                    [0x04] = "FAT16 with less than 65536 sectors ",
+                                    [0x05] = "Extended partition with CHS addressing",
+                                    [0x06] = "FAT16B with 65536 or more sectors",
+                                    [0x07] = "NTFS, exFAT",
+                                    [0x08] = "OS/2 or ...",
+                                    [0x09] = "AIX data/boot or ...",
+                                    [0x0a] = "OS/2 Boot Manager or ...",
+                                    [0x0b] = "FAT32 with CHS addressing",
+                                    [0x0c] = "FAT32X with LBA",
+                                    [0x0e] = "FAT16X with LBA",
+                                    [0x0f] = "Extended partition with LBA ",
+                                    [0x11] = "Logical sectored FAT12 or FAT16[",
+                                    [0x12] = "configuration partition (bootable FAT)  or ...",
+                                    [0x14] = "Omega filesystem or ...",
+                                    [0x15] = "Hidden extended partition with CHS addressing ",
+                                    [0x83] = "Linux native partition",
+                                    }; // this of course isnt full list TODO...finish this, but not really needed
+
+
+struct MBRpartitionEntry{
+
+    u8 bootInd; //boot indicator
+    u8 startingHead;
+    u8 startingSector;      // 6 bits really
+    u16 startingCylinder;   // 10 bits really
+    u8 systemId;    //Defines volume type
+    u8 endingHead;
+    u8 endingSector;      // 6 bits really
+    u16 endingCylinder;   // 10 bits really
+    u32 relativeSectors;
+    u32 totalSectors;
+};
+
+struct MBRpartitionEntry* partitEntries[4]; //max there can be 4 primary partitions
+
+
+u32 mbr[128];
+
+//helper function to extract u32 value from an unaligned array
+u32 extractU32fromU8(u8* startAddress){
+    u32 temp = 0;
+    temp |= *startAddress;
+    startAddress++;
+    temp |= (*startAddress)<<8;
+    startAddress++;
+    temp |= (*startAddress)<<16;
+    startAddress++;
+    temp |= (*startAddress)<<24;
+
+    return temp;
+}
+
+//process master boot record
+void processMBR(){
+
+
+    //check typical "valid bootsector" signature - last two bytes
+    if( ((u8*)mbr)[511] == 0xaa && ((u8*)mbr)[510] == 0x55 ){
+        DEBUG("MBR signature is valid.\r\n");
+
+        u16 partitionStart = 446;
+        int n;
+        for( n=0; n<4; n++ ){
+
+
+            partitEntries[n]->bootInd = ((u8*)mbr)[partitionStart];
+            partitEntries[n]->startingHead = ((u8*)mbr)[partitionStart+1];
+            partitEntries[n]->startingSector = (((u8*)mbr)[partitionStart+2])&0b00111111; //only 6bits represent sector count
+            partitEntries[n]->startingCylinder = (((((u8*)mbr)[partitionStart+2])&0b11000000)<<2) |
+                                                         (((u8*)mbr)[partitionStart+3]);
+            partitEntries[n]->systemId = ((u8*)mbr)[partitionStart+4];
+            partitEntries[n]->endingHead = ((u8*)mbr)[partitionStart+5];
+            partitEntries[n]->endingSector = (((u8*)mbr)[partitionStart+6])&0b00111111; //only 6bits represent sector count
+            partitEntries[n]->endingCylinder = (((((u8*)mbr)[partitionStart+6])&0b11000000)<<2) |
+                                                         (((u8*)mbr)[partitionStart+7]);
+
+            partitEntries[n]->relativeSectors = extractU32fromU8(&(((u8*)mbr)[partitionStart+8]));
+            partitEntries[n]->totalSectors = extractU32fromU8(&(((u8*)mbr)[partitionStart+12]));
+
+            DEBUG("================= Partition entry NR: %d =================\r\n", n+1);
+
+            if(partitEntries[n]->systemId != 0){
+                DEBUG("Boot indicator: 0x%x \r\n", partitEntries[n]->bootInd);
+                DEBUG("Starting CHS values: %d, %d, %d \r\n", partitEntries[n]->startingCylinder,
+                                            partitEntries[n]->startingHead, partitEntries[n]->startingSector);
+                DEBUG("Ending CHS values: %d, %d, %d \r\n", partitEntries[n]->endingCylinder,
+                                            partitEntries[n]->endingHead, partitEntries[n]->endingSector);
+                DEBUG("File system type: %s \r\n", MBRPartitionTypes[partitEntries[n]->systemId]);
+                DEBUG("Relative sectors: 0x%x (%d in decimal)  \r\n", partitEntries[n]->relativeSectors, partitEntries[n]->relativeSectors);
+                DEBUG("Total sectors: 0x%x (%d in decimal)  \r\n", partitEntries[n]->totalSectors, partitEntries[n]->totalSectors);
+            }
+            else{
+                DEBUG("Partition entry is EMPTY!!\r\n");
+            }
+            partitionStart+=16;
+        }
+
+    }
+    else{
+        DEBUG("Error: MBR bootsector signature isn't correct!!!!!!\r\n");
+    }
+
+
+}
+
 /*  Parse CID parameters from all 4 response registers.
 *   In Raspberyy case all data must be shifted right 8bits, because there is no CRC value.
 */
@@ -141,7 +251,7 @@ void mmc_init(void)
     response = POINTVAL_(MMC_RESP0);
     DEBUG("Response after SEND_RELATIVE_ADDR: 0x%x\r\n", response);
 
-    //second time
+ /*   //second time
     //SEND_RELATIVE_ADDR (CMD3)  - Asks the card to publish a new relative address
     POINTVAL_(MMC_ARG1) = 0x00000000;
     //0x031A0000 binary is "00000011 00011010 00000000 00000000"
@@ -154,14 +264,14 @@ void mmc_init(void)
 
     response = POINTVAL_(MMC_RESP0);
     DEBUG("Response after SEND_RELATIVE_ADDR: 0x%x\r\n", response);
+*/
 
 
-
-
+    DEBUG("Response after SEND_CSD  without shifting: 0x%x\r\n", response);
     DEBUG("Response after SEND_CSD  shifted: 0x%x\r\n", ((response >> 16) << 16));
     u32 rcavalue = ((response >> 16) << 16);
      //second time
-    //SEND_CSD ()  - Asks the card to publish a new relative address
+    //SEND_CSD (CMD9) - Addressed card sends its card-specific data (CSD) on the CMD line.
     POINTVAL_(MMC_ARG1) = rcavalue;
     //0x031A0000 binary is "00000011 00011010 00000000 00000000"
     //  16:17 - Type of expected response from card: 10 = 48 bits response (WITHOUT BUSY)
@@ -183,7 +293,7 @@ void mmc_init(void)
 
 
 
-    //SELECT/DESELECT_CARD  ()  - Asks the card to publish a new relative address
+    //SELECT/DESELECT_CARD  (CMD7) -Command toggles a card between the stand-by and transfer states
     POINTVAL_(MMC_ARG1) = rcavalue;
     //0x031A0000 binary is "00000011 00011010 00000000 00000000"
     //  16:17 - Type of expected response from card: 10 = 48 bits response (WITHOUT BUSY)
@@ -197,7 +307,7 @@ void mmc_init(void)
     DEBUG("Response after SELECT/DESELECT_CARD : 0x%x\r\n", response);
 
 
-    //SET_BLOCKLEN  ()  - Asks the card to publish a new relative address
+    //SET_BLOCKLEN  (CMD16)  - sets block length...512 bytes
     POINTVAL_(MMC_ARG1) = 0x0000200;
     //0x031A0000 binary is "00000011 00011010 00000000 00000000"
     //  16:17 - Type of expected response from card: 10 = 48 bits response (WITHOUT BUSY)
@@ -219,18 +329,32 @@ void mmc_init(void)
 
     //read block
     u32 readcount = 0;
-    POINTVAL_(MMC_ARG1) = readcount;
+    //READ_SINGLE_BLOCK  (CMD17)  - read block from sd card
+    POINTVAL_(MMC_ARG1) = 0;
+    //0x031A0000 binary is "00000011 00011010 00000000 00000000"
+    //  16:17 - Type of expected response from card: 10 = 48 bits response (WITHOUT BUSY)
+    //  19 - Check the responses CRC
+    //  20 - Check that response has same index as command
+    //  24:29 - (000011) Index of the command to be issued to the card
     POINTVAL_(MMC_CMDTM) = 0x11380010;
 
-    while(readcount < 10){
-        response = POINTVAL_(MMC_RESP0);
-        DEBUG("Response after readblock : 0x%x\r\n", response);
-        timerWait(1000);
+    timerWait(1000000);
+
+    response = POINTVAL_(MMC_RESP0);
+    DEBUG("Response after readblock : 0x%x\r\n", response);
+
+    while(readcount < 128){
+        response = POINTVAL_(MMC_DATA_REG);
+        mbr[readcount] = response;
+        //DEBUG("Response after readsingle blocky : 0x%x\r\n", response);
+        //timerWait(1000);
         readcount++;
     }
 
-
+    processMBR();
 }
+
+
 
 void initialMmcInit(){
 

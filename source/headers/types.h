@@ -5,8 +5,8 @@ typedef signed   char  s8;
 typedef unsigned char  u8;
 typedef signed   short s16;
 typedef unsigned short u16;
-typedef signed   long  s32;
-typedef unsigned long  u32;
+typedef signed   int  s32;
+typedef unsigned int  u32;
 
 
 #endif /* TYPES_H */

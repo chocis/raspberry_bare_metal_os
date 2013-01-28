@@ -16,7 +16,8 @@
 #define MMC_RESP2   0x20300018
 #define MMC_RESP3   0x2030001c
 
-#define MMC_BLKSIZECNT 0x20300004
+#define MMC_BLKSIZECNT  0x20300004
+#define MMC_DATA_REG    0x20300020
 
 void mmc_init(void);
 
